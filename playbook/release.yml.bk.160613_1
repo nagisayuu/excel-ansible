@@ -1,0 +1,32 @@
+---
+- hosts: all
+  connection: local
+  user: root
+  vars:
+    rootdir: "/tmp"
+  tasks:
+    - name: so copy
+      copy: src=../release/so dest=/tmp/ansible_dst/so owner=root group=root mode="u=rw,g=r,o=r"
+      register: result
+      ignore_errors: True
+      notify: check status1
+    - name: so2 copy
+      copy: src=../release/so2 dest=/tmp/ansible_dst/ owner=root group=root mode="u=rw,g=r,o=r"
+      register: result
+      ignore_errors: True
+      notify: check status2
+    - name: proxy copy
+      copy: src=../release/proxy dest=/tmp/ansible_dst/ owner=root group=root mode="u=rw,g=r,o=r"
+      register: result
+      ignore_errors: True
+      notify: check status3
+  handlers: 
+    - name: check status1
+      debug: msg="debug"
+      when: result|failed
+    - name: check status2
+      debug: msg="debug"
+      when: result|failed
+    - name: check status3
+      debug: msg="debug"
+      when: result|failed 

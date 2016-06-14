@@ -1,0 +1,66 @@
+---
+- hosts: all
+  connection: local
+  user: root
+  vars:
+    rootdir: "/tmp/ansible_dst"
+    date: "{{lookup('pipe','date +%Y%m%d%H%M')}}"
+  tasks:
+### remove symbolic link
+    - name: remove symbolic link so
+      shell: rm -rf {{rootdir}}/so
+      register: result_remove_link_so
+      ignore_errors: True
+    - name: remove symbolic link so status check
+      shell: echo "remove so link failed" >> ../log/ansible.log.{{date}}
+      when: result_remove_link_so|failed
+    - name: remove symbolic link proxy
+      shell: rm -rf {{rootdir}}/proxy
+      register: result_remove_link_proxy
+      ignore_errors: True
+    - name: remove symbolic link proxy status check
+      shell: echo "remove proxy link failed" >> ../log/ansible.log.{{date}}
+      when: result_remove_link_proxy|failed
+
+### release directories
+    - name: so copy
+      copy: src=../release/so dest={{rootdir}}/ owner=root group=root mode="u=rw,g=r,o=r"
+      register: result_so_copy
+      ignore_errors: True
+    - name: so copy status check
+      shell: echo "so copy failed" >> ../log/ansible.log.{{date}}
+      when: result_so_copy|failed
+    - name: so2 copy
+      copy: src=../release/so2 dest={{rootdir}}/ owner=root group=root mode="u=rw,g=r,o=r"
+      register: result_so2_copy
+      ignore_errors: True
+    - name: so2 copy status check
+      shell: echo "so2 copy failed" >> log/ansible.log.{{date}}
+      when: result_so2_copy|failed
+    - name: proxy copy
+      copy: src=../release/proxy dest={{rootdir}}/ owner=root group=root mode="u=rw,g=r,o=r"
+      register: result
+      ignore_errors: True
+    - name: proxy copy status check
+      shell: echo "proxy copy failed" >> ../log/ansible.log.{{date}}
+      when: result|failed
+
+### change permissions
+    - name: change permission so
+      file: path={{rootdir}}/so mode=0777 state=directory owner=root group=root
+    - name: change permission so status check
+      shell: echo "change permission so failed" >> ../log/ansible.log.{{date}}
+      when: result|failed
+    - name: change permission so2
+      file: path={{rootdir}}/so2 mode=0777 state=directory owner=root group=root
+    - name: change permission so2 status check
+      shell: echo "change permission so2 failed" >> ../log/ansible.log.{{date}}
+      when: result|failed
+    - name: change permission proxy
+      file: path={{rootdir}}/proxy mode=0777 state=directory owner=root group=root
+    - name: change permission proxy status check
+      shell: echo "change permission proxy failed" >> ../log/ansible.log.{{date}}
+      when: result|failed
+
+### create symbolic link
+

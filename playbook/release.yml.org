@@ -1,0 +1,7 @@
+---
+- hosts: all
+  connection: local
+  user: root
+  tasks:
+   - name: so copy
+     copy: src=/root/ansible_src/so dest=/tmp/ansible_dst/so owner=root group=root mode="u=rw,g=r,o=r"
